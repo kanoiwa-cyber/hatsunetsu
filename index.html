@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>発熱外来WEB問診票｜加納岩総合病院</title>
+<style>
+  :root {
+    --blue: #1e4f8f;
+    --blue-light: #e8f0fa;
+    --line: #cfd8e3;
+    --text: #222;
+    --muted: #5b6672;
+    --red: #c0392b;
+    --bg: #f5f7fa;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px 64px; }
+  .banner img { width: 100%; display: block; border-radius: 6px; }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 24px 28px;
+    margin-top: 16px;
+  }
+  .card.head { border-top: 6px solid var(--blue); }
+  h1 { font-size: 24px; margin: 0 0 12px; color: var(--blue); }
+  .intro p { margin: 0 0 8px; }
+  .intro .note { color: var(--muted); font-size: 14px; margin-top: 12px; }
+  .intro ul { margin: 4px 0 8px; padding-left: 1.4em; }
+  .required-note { color: var(--red); font-size: 14px; margin-top: 12px; }
+
+  fieldset { border: 0; padding: 0; margin: 0; }
+  legend.section {
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--blue);
+    background: var(--blue-light);
+    padding: 6px 12px;
+    border-radius: 4px;
+    width: 100%;
+    margin: 8px 0 4px;
+  }
+  .q { padding: 16px 0; border-bottom: 1px solid #eef1f5; }
+  .q:last-child { border-bottom: 0; }
+  .q label.title { display: block; font-weight: bold; margin-bottom: 4px; }
+  .q .req { color: var(--red); font-weight: normal; margin-left: 4px; }
+  .q .help { color: var(--muted); font-size: 14px; margin-bottom: 6px; }
+  .q .help .ex { display: block; }
+  input[type=text], input[type=tel], input[type=date], input[type=number], textarea {
+    width: 100%;
+    font: inherit;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: #fff;
+  }
+  input:focus, textarea:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color: var(--blue); }
+  textarea { min-height: 72px; resize: vertical; }
+  .radios label { display: inline-block; margin: 4px 20px 4px 0; }
+  .radios input { margin-right: 6px; transform: scale(1.2); }
+  .inline { display: flex; gap: 8px; align-items: center; }
+  .inline input { max-width: 140px; }
+  .unit { color: var(--muted); }
+  .hp { position: absolute; left: -9999px; }
+
+  .actions { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+  button {
+    font: inherit;
+    font-size: 17px;
+    font-weight: bold;
+    color: #fff;
+    background: var(--blue);
+    border: 0;
+    border-radius: 4px;
+    padding: 14px 20px;
+    cursor: pointer;
+  }
+  button:hover { background: #173f73; }
+  button:disabled { background: #9aa7b6; cursor: default; }
+  .msg { display: none; padding: 14px 16px; border-radius: 4px; font-size: 15px; }
+  .msg.ok { display: block; background: #e6f4ea; border: 1px solid #a6d7b3; color: #1f5a2c; }
+  .msg.ng { display: block; background: #fdecea; border: 1px solid #f2b8b5; color: #8a1f14; }
+  .done { text-align: center; padding: 32px 16px; }
+  .done h2 { color: var(--blue); }
+  footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: 24px; }
+  @media (max-width: 480px) { .card { padding: 18px 16px; } h1 { font-size: 21px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- バナー画像を使う場合は、リポジトリに banner.png を置いてください（不要なら削除可） -->
+  <div class="banner"><img src="banner.png" alt="完全予約制 発熱外来" onerror="this.parentNode.style.display='none'"></div>
+
+  <div class="card head intro">
+    <h1>発熱外来WEB問診票</h1>
+    <p>発熱外来は原則「かかりつけ」のみ受診可能な完全予約制の外来です。</p>
+    <p>〜「かかりつけ」とは〜</p>
+    <ul>
+      <li>次回の受診予約が入っている</li>
+      <li>定期受診、定期処方を受けている</li>
+    </ul>
+    <p class="note">※定員が上限に達したら受付終了となります。状況により、全てお受けできるとは限りません。また、問診内容によっては、当院での受診が出来かねる場合がございます。予めご了承ください。</p>
+    <p class="required-note">* は必須の質問です</p>
+  </div>
+
+  <form id="monshin" class="card" novalidate>
+    <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off">
+
+    <fieldset>
+      <legend class="section">基本情報</legend>
+
+      <div class="q">
+        <label class="title" for="patient_id">診察券番号<span class="req">*</span></label>
+        <div class="help">診察券がない場合もしくは不明であれば「なし」「不明」と記入してください。</div>
+        <input type="text" id="patient_id" name="patient_id" required>
+      </div>
+
+      <div class="q">
+        <label class="title" for="name">お名前カナ<span class="req">*</span></label>
+        <div class="help">お名前をカタカナで入力してください</div>
+        <input type="text" id="name" name="name" required autocomplete="name">
+      </div>
+
+      <div class="q">
+        <label class="title" for="birth">生年月日<span class="req">*</span></label>
+        <input type="date" id="birth" name="birth" required max="2030-12-31">
+      </div>
+
+      <div class="q">
+        <label class="title" for="age">年齢<span class="req">*</span></label>
+        <div class="help">生年月日から自動で入りますが、修正もできます。</div>
+        <div class="inline"><input type="number" id="age" name="age" min="0" max="130" required><span class="unit">歳</span></div>
+      </div>
+
+      <div class="q">
+        <span class="title" style="display:block;font-weight:bold;margin-bottom:4px">性別<span class="req">*</span></span>
+        <div class="radios">
+          <label><input type="radio" name="gender" value="男性" required>男性</label>
+          <label><input type="radio" name="gender" value="女性">女性</label>
+          <label><input type="radio" name="gender" value="回答しない">回答しない</label>
+        </div>
+      </div>
+
+      <div class="q">
+        <label class="title" for="add">現住所<span class="req">*</span></label>
+        <input type="text" id="add" name="add" required autocomplete="street-address">
+      </div>
+
+      <div class="q">
+        <label class="title" for="phone">電話番号<span class="req">*</span></label>
+        <div class="help">電話番号に誤りがあった場合、正常に受付ができません。間違いなく入力してください。</div>
+        <input type="tel" id="phone" name="phone" required autocomplete="tel" inputmode="tel">
+      </div>
+
+      <div class="q">
+        <label class="title" for="temp">現在の体温を記入<span class="req">*</span></label>
+        <div class="inline"><input type="number" id="temp" name="temp" step="0.1" min="30" max="45" required inputmode="decimal"><span class="unit">℃</span></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend class="section">問診</legend>
+      <div id="questions"></div>
+    </fieldset>
+
+    <div class="actions">
+      <div id="msg" class="msg" role="alert"></div>
+      <button type="submit" id="submitBtn">送信する</button>
+    </div>
+  </form>
+
+  <div id="done" class="card done" style="display:none">
+    <h2>送信しました</h2>
+    <p>ご回答ありがとうございました。<br>内容を確認のうえ、当院よりご連絡いたします。</p>
+  </div>
+
+  <footer>加納岩総合病院 発熱外来</footer>
+</div>
+
+<script>
+  // ★ GASの「ウェブアプリのURL」（https://script.google.com/macros/s/.../exec）を貼り付けてください
+  const GAS_ENDPOINT = 'https://script.google.com/macros/s/XXXXXXXXXXXXXXXX/exec';
+  // ★ Code.gs の FORM_TOKEN と同じ文字列にしてください
+  const FORM_TOKEN = 'kanoiwa-fever-2026';
+
+  // 問診項目（Googleフォームと同じ文言）
+  const QUESTIONS = [
+    { id: 'q1',  req: true,  title: '〈問診1〉発熱はいつからありますか?（既に解熱している場合も記入）', ex: '例）2日前　夕方18時頃～　38.8度前後がずっと続いている。', note: '※発熱がない場合は「なし」と記入' },
+    { id: 'q2',  req: true,  title: '〈問診2〉かかりつけ医はありますか？ある場合は、医療機関名を記入', ex: '例）加納岩総合病院　循環器科', note: '※かかりつけ医がない場合は「なし」と記入' },
+    { id: 'q3',  req: true,  title: '〈問診3〉7日間以内にインフルエンザ患者・新型コロナウイルス感染患者等が身の回りにいましたか？', ex: '例）同居家族が2日前にコロナ陽性', note: '※身の回りにいない場合は「なし」と記入' },
+    { id: 'q4',  req: true,  title: '〈問診4〉咳はでますか？また、いつからですか。', ex: '例）3日前～日中は出ないが、夜は激しく出る。昨晩は少し落ち着いた。', note: '※症状がない場合は「なし」と記入' },
+    { id: 'q5',  req: false, title: '〈問診5〉息苦しさ・胸の痛みはありますか？また、いつからですか。', ex: '例）3日前から。日中は痛くないが夜は痛い。', note: '※症状がない場合は「なし」と記入' },
+    { id: 'q6',  req: true,  title: '〈問診6〉のどの痛みはありますか？また、いつからですか。', ex: '例）2日前から　少しイガイガする程度。', note: '※症状がない場合は「なし」と記入' },
+    { id: 'q7',  req: true,  title: '〈問診7〉痰がらみはありますか？また、いつからですか。', ex: '例）2日前からある。', note: '※症状がない場合は「なし」と記入' },
+    { id: 'q8',  req: true,  title: '〈問診8〉頭痛はありますか？また、いつからですか。', ex: '例）2日前からある', note: '※症状がない場合は「なし」と記入' },
+    { id: 'q9',  req: true,  title: '〈問診9〉鼻水は出ますか？また、いつからですか。', ex: '例）2日前からある。', note: '※症状がない場合は「なし」と記入' },
+    { id: 'q10', req: true,  title: '〈問診10〉下痢はありますか？また、いつからですか。', ex: '例）2日前からある。', note: '※症状がない場合は「なし」と記入' },
+    { id: 'q11', req: true,  title: '〈問診11〉その他、気になる症状はありますか？', ex: '例）関節痛、吐き気、だるい、食欲不振、激しい腹痛…等', note: '※症状がない場合は「なし」と記入' },
+    { id: 'q12', req: true,  title: '〈問診12〉内科的な基礎疾患はありますか？', ex: '例）高血圧症で循環器にかかっている。', note: '※ない場合は「なし」と記入' },
+    { id: 'q13', req: true,  title: '〈問診13〉今回の症状について、既に他の医療機関を受診しましたか？', ex: '例）7/28に●●内科クリニックを受診して、コロナもインフルも陰性だった。', note: '※ない場合は「なし」と記入' },
+    { id: 'q14', req: true,  title: '〈問診14〉今まで新型コロナウイルスに罹ったことがありますか？ある場合は発症日を記入', ex: '例）R7.2月にコロナにかかった。', note: '※ない場合は「なし」と記入' },
+    { id: 'q15', req: true,  title: '〈問診15〉水分、食事は摂れていますか？', ex: '例）食事はいつもより少ない。水分もあまり摂れていない。', note: '※とれている場合は「はい」と記入' },
+    { id: 'q16', req: true,  title: '〈問診16〉歩行は可能ですか？', ex: '例）少しふらつくが、家族の付き添いで受診可能。', note: '※歩行可能な場合は「はい」と記入' },
+    { id: 'q17', req: true,  title: '〈問診17〉市販薬などの服用はありましたか？', ex: '例）カロナールを昨日の夜20時頃、服用した。', note: '※ない場合は「なし」と記入' },
+    { id: 'q18', req: true,  title: '〈問診18〉薬のアレルギーはありますか？', ex: '例）ペニシリン系抗生物質', note: '※ない場合は「なし」と記入' },
+    { id: 'q19', req: true,  title: '〈問診19〉コロナワクチンの接種歴はありますか？また、最終接種日も教えてください。', ex: '例）最終接種日：2023年10月頃', note: '※ない場合は「なし」と記入' },
+    { id: 'q20', req: false, title: '〈問診20〉（女性のみ回答）現在ご妊娠の可能性はありますか？', ex: '例）あり　妊娠5ヵ月', note: '※ない場合は「なし」と記入' },
+    { id: 'q21', req: false, title: '〈問診21〉その他特記事項があれば記載してください。', ex: '', note: '' },
+  ];
+
+  // 問診欄を生成
+  const qWrap = document.getElementById('questions');
+  QUESTIONS.forEach(q => {
+    const div = document.createElement('div');
+    div.className = 'q';
+    div.innerHTML =
+      `<label class="title" for="${q.id}">${q.title}${q.req ? '<span class="req">*</span>' : ''}</label>` +
+      `<div class="help"><span class="ex">${q.ex}</span>${q.note}</div>` +
+      `<textarea id="${q.id}" name="${q.id}" ${q.req ? 'required' : ''}></textarea>`;
+    qWrap.appendChild(div);
+  });
+
+  // 生年月日から年齢を自動計算
+  document.getElementById('birth').addEventListener('change', e => {
+    const b = new Date(e.target.value);
+    if (isNaN(b)) return;
+    const t = new Date();
+    let age = t.getFullYear() - b.getFullYear();
+    if (t.getMonth() < b.getMonth() || (t.getMonth() === b.getMonth() && t.getDate() < b.getDate())) age--;
+    if (age >= 0 && age < 130) document.getElementById('age').value = age;
+  });
+
+  // 送信
+  const form = document.getElementById('monshin');
+  const btn = document.getElementById('submitBtn');
+  const msg = document.getElementById('msg');
+
+  function showMsg(text, ok) {
+    msg.textContent = text;
+    msg.className = 'msg ' + (ok ? 'ok' : 'ng');
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+
+    if (!form.checkValidity()) {
+      const first = form.querySelector(':invalid');
+      showMsg('未入力の必須項目があります。赤い * の項目をご確認ください。', false);
+      if (first) { first.focus(); first.scrollIntoView({ block: 'center' }); }
+      return;
+    }
+
+    const data = { token: FORM_TOKEN };
+    new FormData(form).forEach((v, k) => { data[k] = String(v).trim(); });
+
+    btn.disabled = true;
+    btn.textContent = '送信中…';
+    msg.className = 'msg';
+
+    try {
+      // Content-Type を指定しない（text/plain）ことで、GAS へ CORS プリフライトなしで送信できます
+      const res = await fetch(GAS_ENDPOINT, { method: 'POST', body: JSON.stringify(data) });
+      const json = await res.json();
+      if (json.ok) {
+        form.style.display = 'none';
+        document.getElementById('done').style.display = 'block';
+        window.scrollTo({ top: 0 });
+      } else {
+        showMsg(json.error || '送信に失敗しました。', false);
+        btn.disabled = false;
+        btn.textContent = '送信する';
+      }
+    } catch (err) {
+      showMsg('通信エラーのため送信できませんでした。電波状況をご確認のうえ、もう一度お試しください。改善しない場合は、お電話でご連絡ください。', false);
+      btn.disabled = false;
+      btn.textContent = '送信する';
+    }
+  });
+</script>
+</body>
+</html>
